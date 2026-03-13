@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="history-section py-4">
+    <div class="container">
+        <h2 class="mb-4">Transaction History</h2>
+        
+        <div class="history-card">
+            {% if transactions %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Date & Time</th>
+                                <th>Type</th>
+                                <th>Counterparty</th>
+                                <th>Energy (kWh)</th>
+                                <th>Credits</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for transaction in transactions %}
+                                {% set is_sender = transaction.sender_id == current_user.id %}
+                                <tr>
+                                    <td>{{ transaction.timestamp.strftime('%Y-%m-%d %H:%M') }}</td>
+                                    <td>
+                                        {% if is_sender %}
+                                            <span class="badge bg-danger">Sent</span>
+                                        {% else %}
+                                            <span class="badge bg-success">Received</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if is_sender %}
+                                            To: {{ transaction.receiver.username }}
+                                        {% else %}
+                                            From: {{ transaction.sender.username }}
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <strong>{{ "%.1f"|format(transaction.energy_units) }} kWh</strong>
+                                    </td>
+                                    <td>
+                                        <span class="{% if is_sender %}text-success{% else %}text-danger{% endif %}">
+                                            {% if is_sender %}+{% else %}-{% endif %}
+                                            {{ "%.0f"|format(transaction.credits_used) }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <i class="fas fa-check-circle text-success"></i>
+                                        Completed
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-history fa-4x text-muted mb-3"></i>
+                    <h4 class="text-muted">No transactions yet</h4>
+                    <p>Start sharing energy to see your transaction history here!</p>
+                    <a href="{{ url_for('marketplace') }}" class="btn btn-success">
+                        <i class="fas fa-store me-2"></i>
+                        Go to Marketplace
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="hero-section">
+    <div class="container">
+        <div class="row min-vh-100 align-items-center">
+            <div class="col-lg-6 text-white">
+                <h1 class="display-4 fw-bold mb-4">
+                    <i class="fas fa-sun me-3"></i>
+                    Share Solar Energy with Your Neighborhood
+                </h1>
+                <p class="lead mb-4">
+                    Join our peer-to-peer energy sharing platform. Share excess solar power with neighbors, 
+                    earn credits, and build a sustainable community.
+                </p>
+                <div class="d-flex gap-3">
+                    <a href="{{ url_for('register') }}" class="btn btn-success btn-lg">
+                        <i class="fas fa-user-plus me-2"></i>Get Started
+                    </a>
+                    <a href="{{ url_for('login') }}" class="btn btn-outline-light btn-lg">
+                        <i class="fas fa-sign-in-alt me-2"></i>Login
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="energy-stats-card">
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <div class="stat-card">
+                                <i class="fas fa-solar-panel fa-3x text-warning mb-3"></i>
+                                <h3>Produce</h3>
+                                <p>Generate solar energy during peak hours</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="stat-card">
+                                <i class="fas fa-bolt fa-3x text-primary mb-3"></i>
+                                <h3>Share</h3>
+                                <p>Share excess with neighbors in need</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="stat-card">
+                                <i class="fas fa-coins fa-3x text-success mb-3"></i>
+                                <h3>Earn</h3>
+                                <p>Earn credits for every kWh shared</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="stat-card">
+                                <i class="fas fa-leaf fa-3x text-success mb-3"></i>
+                                <h3>Sustain</h3>
+                                <p>Build a greener community together</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Features Section -->
+<section class="features-section py-5">
+    <div class="container">
+        <h2 class="text-center mb-5">How It Works</h2>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-solar-panel"></i>
+                    </div>
+                    <h3>Track Your Energy</h3>
+                    <p>Enter your solar production and consumption data to see your energy balance.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-hand-holding-heart"></i>
+                    </div>
+                    <h3>Share with Neighbors</h3>
+                    <p>Connect with nearby homes that need extra power and share your excess energy.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3>Manage Credits</h3>
+                    <p>Earn credits when you share, spend them when you need energy from others.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,270 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="dashboard-section py-4">
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2 sidebar">
+                <div class="sidebar-content">
+                    <div class="user-profile text-center mb-4">
+                        <div class="avatar">
+                            <i class="fas fa-user-circle fa-4x text-primary"></i>
+                        </div>
+                        <h5 class="mt-2">{{ user.username }}</h5>
+                        <span class="badge bg-success">Active</span>
+                    </div>
+
+                    <nav class="nav flex-column">
+                        <a class="nav-link active" href="#dashboard" data-bs-toggle="tab">
+                            <i class="fas fa-chart-pie me-2"></i>Dashboard
+                        </a>
+                        <a class="nav-link" href="#input" data-bs-toggle="tab">
+                            <i class="fas fa-edit me-2"></i>Energy Input
+                        </a>
+                    </nav>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-md-9 col-lg-10 main-content">
+                <div class="tab-content">
+                    <!-- Dashboard Tab -->
+                    <div class="tab-pane fade show active" id="dashboard">
+                        <h2 class="mb-4">Energy Dashboard</h2>
+
+                        <div class="row g-4">
+                            <!-- Credits -->
+                            <div class="col-md-6 col-lg-3">
+                                <div class="dashboard-card credits-card">
+                                    <div class="card-icon">
+                                        <i class="fas fa-coins"></i>
+                                    </div>
+                                    <div class="card-content">
+                                        <h3>Energy Credits</h3>
+                                        <div class="value">{{ "%.1f"|format(user.credits) }}</div>
+                                        <small>Available credits</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Produced -->
+                            <div class="col-md-6 col-lg-3">
+                                <div class="dashboard-card produced-card">
+                                    <div class="card-icon">
+                                        <i class="fas fa-solar-panel"></i>
+                                    </div>
+                                    <div class="card-content">
+                                        <h3>Energy Produced</h3>
+                                        <div class="value">{{ "%.1f"|format(user.energy_produced) }} kWh</div>
+                                        <small>Total production</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Consumed -->
+                            <div class="col-md-6 col-lg-3">
+                                <div class="dashboard-card consumed-card">
+                                    <div class="card-icon">
+                                        <i class="fas fa-bolt"></i>
+                                    </div>
+                                    <div class="card-content">
+                                        <h3>Energy Consumed</h3>
+                                        <div class="value">{{ "%.1f"|format(user.energy_consumed) }} kWh</div>
+                                        <small>Total consumption</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Balance -->
+                            <div class="col-md-6 col-lg-3">
+                                {% if user.get_excess_energy() > 0 %}
+                                <div class="dashboard-card excess-card">
+                                {% else %}
+                                <div class="dashboard-card deficit-card">
+                                {% endif %}
+                                    <div class="card-icon">
+                                        {% if user.get_excess_energy() > 0 %}
+                                        <i class="fas fa-arrow-up"></i>
+                                        {% else %}
+                                        <i class="fas fa-arrow-down"></i>
+                                        {% endif %}
+                                    </div>
+                                    <div class="card-content">
+                                        <h3>Energy Balance</h3>
+                                        <div class="value">
+                                            {% if user.get_excess_energy() > 0 %}
+                                                +{{ "%.1f"|format(user.get_excess_energy()) }} kWh
+                                            {% else %}
+                                                -{{ "%.1f"|format(user.get_deficit_energy()) }} kWh
+                                            {% endif %}
+                                        </div>
+                                        <small>
+                                            {% if user.get_excess_energy() > 0 %}
+                                                Excess energy available
+                                            {% else %}
+                                                Energy deficit
+                                            {% endif %}
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quick Stats -->
+                        <div class="row mt-5">
+                            <div class="col-12">
+                                <div class="chart-card">
+                                    <h4>Energy Overview</h4>
+                                    <div class="row mt-4">
+                                        <div class="col-md-6">
+                                            <div class="progress-info">
+                                                <label>Production vs Consumption</label>
+                                                <div class="progress" style="height: 30px;">
+                                                    {% set total = user.energy_produced + user.energy_consumed %}
+                                                    {% if total > 0 %}
+                                                        {% set prod_percent = (user.energy_produced / total * 100) %}
+                                                        {% set cons_percent = 100 - prod_percent %}
+                                                        <div class="progress-bar bg-success" 
+                                                            style="--pg-width: {{ prod_percent }}%; width: var(--pg-width); font-size: 14px; line-height: 30px;">
+                                                            Production {{ "%.1f"|format(prod_percent) }}%
+                                                        </div>
+
+                                                        <div class="progress-bar bg-primary" 
+                                                            style="--pg-width: {{ cons_percent }}%; width: var(--pg-width); font-size: 14px; line-height: 30px;">
+                                                            Consumption {{ "%.1f"|format(cons_percent) }}%
+                                                        </div>
+                                                    {% else %}
+                                                        <div class="progress-bar bg-secondary"
+                                                            style="width: 100%; font-size: 14px; line-height: 30px;">
+                                                            No data available
+                                                        </div>
+                                                    {% endif %}
+                                                </div>
+                                                <div class="d-flex justify-content-between mt-2">
+                                                    <small class="text-success">
+                                                        <i class="fas fa-solar-panel me-1"></i>
+                                                        Produced: {{ "%.1f"|format(user.energy_produced) }} kWh
+                                                    </small>
+                                                    <small class="text-primary">
+                                                        <i class="fas fa-bolt me-1"></i>
+                                                        Consumed: {{ "%.1f"|format(user.energy_consumed) }} kWh
+                                                    </small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Energy Input Tab -->
+                    <div class="tab-pane fade" id="input">
+                        <h2 class="mb-4">Energy Input Form</h2>
+                        <div class="row">
+                            <div class="col-md-8 col-lg-6">
+                                <div class="input-card">
+                                    <form method="POST" action="{{ url_for('dashboard') }}">
+                                        <div class="mb-4">
+                                            <label for="energy_produced" class="form-label">
+                                                <i class="fas fa-solar-panel text-warning me-2"></i>
+                                                Energy Produced (kWh)
+                                            </label>
+                                            <input type="number"
+                                                   step="0.1"
+                                                   min="0"
+                                                   class="form-control"
+                                                   id="energy_produced"
+                                                   name="energy_produced"
+                                                   value="{{ user.energy_produced }}"
+                                                   required>
+                                            <small class="text-muted">
+                                                Enter your solar energy production
+                                            </small>
+                                        </div>
+
+                                        <div class="mb-4">
+                                            <label for="energy_consumed" class="form-label">
+                                                <i class="fas fa-bolt text-primary me-2"></i>
+                                                Energy Consumed (kWh)
+                                            </label>
+                                            <input type="number"
+                                                   step="0.1"
+                                                   min="0"
+                                                   class="form-control"
+                                                   id="energy_consumed"
+                                                   name="energy_consumed"
+                                                   value="{{ user.energy_consumed }}"
+                                                   required>
+                                            <small class="text-muted">
+                                                Enter your household consumption
+                                            </small>
+                                        </div>
+
+                                        <div class="calculation-preview mb-4">
+                                            <h5>Preview Calculation:</h5>
+                                            <div class="row text-center">
+                                                <div class="col-4">
+                                                    <div class="calc-item">
+                                                        <small>Produced</small>
+                                                        <strong id="preview_produced">{{ "%.1f"|format(user.energy_produced) }}</strong>
+                                                    </div>
+                                                </div>
+                                                <div class="col-4">
+                                                    <div class="calc-item">
+                                                        <small>Consumed</small>
+                                                        <strong id="preview_consumed">{{ "%.1f"|format(user.energy_consumed) }}</strong>
+                                                    </div>
+                                                </div>
+                                                <div class="col-4">
+                                                    <div class="calc-item">
+                                                        <small>Balance</small>
+                                                        <strong id="preview_balance">{{ "%.1f"|format(user.energy_produced - user.energy_consumed) }}</strong>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <button type="submit" class="btn btn-success w-100">
+                                            <i class="fas fa-save me-2"></i>
+                                            Update Energy Data
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const produced = document.getElementById('energy_produced');
+    const consumed = document.getElementById('energy_consumed');
+    
+    if (produced && consumed) {
+        function updatePreview() {
+            const prodVal = parseFloat(produced.value) || 0;
+            const consVal = parseFloat(consumed.value) || 0;
+            
+            const previewProduced = document.getElementById('preview_produced');
+            const previewConsumed = document.getElementById('preview_consumed');
+            const previewBalance = document.getElementById('preview_balance');
+            
+            if (previewProduced) previewProduced.textContent = prodVal.toFixed(1);
+            if (previewConsumed) previewConsumed.textContent = consVal.toFixed(1);
+            if (previewBalance) previewBalance.textContent = (prodVal - consVal).toFixed(1);
+        }
+        
+        produced.addEventListener('input', updatePreview);
+        consumed.addEventListener('input', updatePreview);
+    }
+});
+</script>
+{% endblock %}
